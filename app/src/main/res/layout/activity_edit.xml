@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/id_edt_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="标题:" />
+
+    <FrameLayout
+        android:layout_below="@+id/id_edt_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <mouse.com.cloudnote_01.fire.FireWorkView
+            android:id="@+id/id_fireworkview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <EditText
+            android:id="@+id/id_edt_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:gravity="top"
+            android:hint="在这里输入您的文字......" />
+    </FrameLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:id="@+id/id_btn_abandon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="舍弃" />
+
+        <Button
+            android:id="@+id/id_btn_store"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:onClick="finishEdit"
+            android:text="保存" />
+    </RelativeLayout>
+
+</RelativeLayout>

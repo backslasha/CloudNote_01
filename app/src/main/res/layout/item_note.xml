@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#33ffffff"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/id_tv_note_title"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="第一节，格林公式及其应用" />
+
+    <TextView
+        android:id="@+id/id_tv_note_summary"
+        style="@style/AppTheme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="定理1，折周期函数为2 的舟曲大家哦啊跑靠谱爱哭和阿虎ISA
+        ......" />
+
+    <TextView
+        android:maxLines="1"
+        android:id="@+id/id_tv_note_time"
+        style="@style/TextAppearance.StatusBar.EventContent.Time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="2016/11/01" />
+</LinearLayout>
