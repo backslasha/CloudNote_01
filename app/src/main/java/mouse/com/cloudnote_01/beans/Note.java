@@ -5,17 +5,21 @@ import java.io.Serializable;
 public class Note implements Serializable {
     private String note_title;
     private String note_content;
-    private String note_tiem;
-    private int index = -1;
+    private String note_time;
 
-    public Note(String note_title, String note_content, String note_tiem, long note_id) {
+
+    private long note_id;
+    private Object obj;
+
+    public Note(String note_title, String note_content, String note_time, long note_id) {
         this.note_title = note_title;
         this.note_content = note_content;
-        this.note_tiem = note_tiem;
+        this.note_time = note_time;
         this.note_id = note_id;
     }
 
     public Note() {
+
     }
 
     public long getNote_id() {
@@ -25,8 +29,6 @@ public class Note implements Serializable {
     public void setNote_id(long note_id) {
         this.note_id = note_id;
     }
-
-    private long note_id;
 
     public String getNote_title() {
         return note_title;
@@ -44,16 +46,16 @@ public class Note implements Serializable {
         this.note_content = note_content;
     }
 
-    public String getNote_tiem() {
-        return note_tiem;
+    public String getNote_time() {
+        return note_time;
     }
 
-    public void setNote_time(String note_tiem) {
-        this.note_tiem = note_tiem;
+    public void setNote_time(String note_item) {
+        this.note_time = note_item;
     }
 
     @Override
     public boolean equals(Object obj) {
-        return ((Note) obj).getNote_id() == note_id || super.equals(obj);
+        return obj instanceof Note&&((Note) obj).getNote_id() == note_id;
     }
 }

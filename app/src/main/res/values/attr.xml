@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="position_horizontal">
+        <enum name="left_bottom" value="1" />
+        <enum name="center_bottom" value="2" />
+        <enum name="right_bottom" value="3" />
+    </attr>
+    <attr name="interval" format="dimension" />
+
+    <declare-styleable name="VerticalMenu">
+        <attr name="interval" />
+        <attr name="position_horizontal"  />
+    </declare-styleable>
+
+</resources>

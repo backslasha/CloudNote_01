@@ -39,7 +39,7 @@ public class EditActivity extends Activity {
             edt_title.setText(preNoteTitle);
         }
 
-        setFire();
+        //setFire();
     }
 
     //编辑完按保存按钮触发
@@ -68,7 +68,7 @@ public class EditActivity extends Activity {
         }
 
         //新增的笔记，则设置全新属性（包括id），
-        // 否则只设置部分属性，不修改id
+        //若是修改的笔记，则只设置部分属性，不修改id
         if (note == null) {
             note = new Note(title, content, time, newId);
         } else {
