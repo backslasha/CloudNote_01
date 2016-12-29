@@ -14,7 +14,7 @@ import mouse.com.cloudnote_01.beans.Note;
 import mouse.com.cloudnote_01.fire.FireWorkView;
 
 
-public class EditActivity extends Activity {
+public class EditActivity extends BaseActivity {
     private EditText edt_content, edt_title;
     private String preNoteTitle = "", preNoteContent = "";//上次关闭时的本条笔记的标题和内容，若是新开的笔记，则都为“”
     private Note note;
