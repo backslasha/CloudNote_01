@@ -1,7 +1,6 @@
 package mouse.com.cloudnote_01.adapters;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,17 +8,23 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import mouse.com.cloudnote_01.R;
 import mouse.com.cloudnote_01.beans.Note;
+import mouse.com.cloudnote_01.utils.BmobHelper;
 import mouse.com.cloudnote_01.utils.MyDatabaseHelper;
 
 
 public class MyAdapter extends BaseAdapter {
+    public static final String EMPTY_BMOB_ID = "null";
     private LinkedList<Note> mNotes = new LinkedList<>();
     private Context mContext;
+
+    public MyDatabaseHelper getMyDatabaseHelper() {
+        return myDatabaseHelper;
+    }
+
     private MyDatabaseHelper myDatabaseHelper;
 
     public MyAdapter(Context context) {
@@ -64,7 +69,6 @@ public class MyAdapter extends BaseAdapter {
     /**
      * 传入note的id如果已经存在，则在mNotes中将已经存在的修改，此时属于修改笔记
      * 否则直接在顶部增加一个note，此时属于新增笔记
-     *
      * @param note 需要增加或者修改的note
      */
     public void addNote(Note note) {
@@ -74,16 +78,15 @@ public class MyAdapter extends BaseAdapter {
                 //2.对于数据库，使用update语句更新相应id字段的note
                 mNotes.remove(n);
                 mNotes.addFirst(note);
-                myDatabaseHelper.update(note.getNote_title(),note.getNote_content(),note.getNote_time(),n.getNote_id());
+                myDatabaseHelper.update(note.getNote_title(), note.getNote_content(), note.getNote_time(), n.getNote_id(), n.getBmob_id());
                 notifyDataSetChanged();
-                Toast.makeText(mContext, "已修改.", Toast.LENGTH_SHORT).show();
-                return ;
+                return;
             }
         }
         //新增节点note到mNotes中并且insert到数据库中
         mNotes.addFirst(note);
         notifyDataSetChanged();
-        myDatabaseHelper.insert(note.getNote_title(), note.getNote_content(), note.getNote_time(), note.getNote_id());
+        myDatabaseHelper.insert(note.getNote_title(), note.getNote_content(), note.getNote_time(), note.getNote_id(), EMPTY_BMOB_ID);
         myDatabaseHelper.query();
     }
 
@@ -97,4 +100,6 @@ public class MyAdapter extends BaseAdapter {
         notifyDataSetChanged();
         Toast.makeText(mContext, "已删除.", Toast.LENGTH_SHORT).show();
     }
+
+
 }

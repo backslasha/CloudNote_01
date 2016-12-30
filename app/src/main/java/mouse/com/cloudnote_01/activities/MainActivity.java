@@ -7,26 +7,45 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import java.util.List;
+
+import cn.bmob.v3.Bmob;
 import mouse.com.cloudnote_01.R;
 import mouse.com.cloudnote_01.adapters.MyAdapter;
 import mouse.com.cloudnote_01.beans.Note;
+import mouse.com.cloudnote_01.utils.BmobHelper;
+import mouse.com.cloudnote_01.utils.MyDatabaseHelper;
+import mouse.com.cloudnote_01.widgets.VerticalMenu;
 
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
     private ListView listView;
+    private Button btn_flush;
+    private VerticalMenu verticalMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button btn_addNewNote = (Button) findViewById(R.id.id_btn_add_new_note);
+        btn_flush = (Button) findViewById(R.id.id_btn_flush);
+
+        verticalMenu = (VerticalMenu) findViewById(R.id.id_vertical_menu);
         listView = (ListView) findViewById(R.id.id_lv);
 
-        btn_addNewNote.setOnClickListener(this);
+        verticalMenu.setOnMainClickListener(new VerticalMenu.OnMainButtonClickListener() {
+            @Override
+            public void onClick(View view) {
+                startNewEdit();
+            }
+        });
+        btn_flush.setOnClickListener(this);
         listView.setAdapter(new MyAdapter(this));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -48,11 +67,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             }
         });
 
-        if (getActionBar() != null) {
-            getActionBar().hide();
-        }
-
-
+        //①.默认初始化
+        Bmob.initialize(this, "a4f2c00bbb157465b1b7d5ba19851421");
     }
 
     @Override
@@ -65,10 +81,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             getWindow().setStatusBarColor(Color.TRANSPARENT);//21以上
             getWindow().setNavigationBarColor(getResources().getColor(R.color.colorAppTheme));
             View decorView = getWindow().getDecorView();
-            int option = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN ;
+            int option =
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
             decorView.setSystemUiVisibility(option);
         }
+
     }
 
     @Override
@@ -85,8 +102,32 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.id_btn_add_new_note:
-                startNewEdit();
+            case R.id.id_btn_flush:
+                RotateAnimation rotateAnim = new RotateAnimation(0, 360f, RotateAnimation.RELATIVE_TO_SELF, 0.5f, RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+                rotateAnim.setDuration(700);
+                rotateAnim.setRepeatCount(-1);
+                rotateAnim.setRepeatMode(RotateAnimation.START_ON_FIRST_FRAME);
+                rotateAnim.setInterpolator(new AccelerateDecelerateInterpolator());
+                btn_flush.startAnimation(rotateAnim);
+                List<Note> notes = ((MyAdapter) (listView.getAdapter())).getMyDatabaseHelper().query(MyAdapter.EMPTY_BMOB_ID);
+                BmobHelper.getInstance().addToSycnNotes(notes);
+                BmobHelper.getInstance().sycnToBmob(this, new BmobHelper.OnSycnFinishListener() {
+                    @Override
+                    public void onSuccess(int suc, int fal, List<Note> successSycnNotes) {
+                        Toast.makeText(MainActivity.this, "同步完成" + suc + ",失败" + fal, Toast.LENGTH_SHORT).show();
+                        btn_flush.clearAnimation();
+                        MyDatabaseHelper myDatabaseHelper = ((MyAdapter) (listView.getAdapter())).getMyDatabaseHelper();
+                        for (Note note : successSycnNotes) {
+                            myDatabaseHelper.update(note.getNote_title(), note.getNote_content(), note.getNote_time(), note.getNote_id(), note.getBmob_id());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int i, String s) {
+                        Toast.makeText(MainActivity.this, "出错了，肯定是Bmob的问题/害怕 " + i + ":" + s, Toast.LENGTH_SHORT).show();
+                        btn_flush.clearAnimation();
+                    }
+                });
                 break;
 
         }

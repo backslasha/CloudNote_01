@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import mouse.com.cloudnote_01.R;
+import mouse.com.cloudnote_01.adapters.MyAdapter;
 import mouse.com.cloudnote_01.beans.Note;
 import mouse.com.cloudnote_01.fire.FireWorkView;
 
@@ -70,7 +71,7 @@ public class EditActivity extends BaseActivity {
         //新增的笔记，则设置全新属性（包括id），
         //若是修改的笔记，则只设置部分属性，不修改id
         if (note == null) {
-            note = new Note(title, content, time, newId);
+            note = new Note(title, content, time, newId, MyAdapter.EMPTY_BMOB_ID);
         } else {
             note.setNote_content(content);
             note.setNote_title(title);

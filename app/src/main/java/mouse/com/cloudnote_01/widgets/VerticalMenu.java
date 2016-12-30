@@ -6,13 +6,10 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
-import android.view.animation.AnticipateOvershootInterpolator;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.OvershootInterpolator;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
@@ -21,20 +18,28 @@ import mouse.com.cloudnote_01.R;
 
 public class VerticalMenu extends ViewGroup {
     private Status mCurrentStatus = Status.CLOSE;
-    private int mIntervals;
-    private int mPositionHorizontal = POSITION_HORIZONTAL_CENTER;
-    private View mCButton;
+    private int mIntervals;//菜单项之间的间隔
+    private int mPositionHorizontal = POSITION_HORIZONTAL_CENTER;//菜单出现的位置
+    private View mCButton;//中心菜单按钮
     private OnMenuItemClickListener mMenuItemClickListener;
+    private OnMainButtonClickListener mOnClickListener;
+    private boolean rotateToggle = false;
 
     public final static int POSITION_HORIZONTAL_LEFT = 1;
     public final static int POSITION_HORIZONTAL_CENTER = 2;
     public final static int POSITION_HORIZONTAL_RIGHT = 3;
+
     //表示菜单开关状态的枚举值
     private enum Status {
         OPEN, CLOSE
     }
+
     public interface OnMenuItemClickListener {
         void onClick(View view, int pos);
+    }
+
+    public interface OnMainButtonClickListener {
+        void onClick(View view);
     }
 
     public VerticalMenu(Context context) {
@@ -54,6 +59,7 @@ public class VerticalMenu extends ViewGroup {
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.VerticalMenu, defStyleAttr, 0);
         mIntervals = (int) a.getDimension(R.styleable.VerticalMenu_interval, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics()));
         mPositionHorizontal = a.getInteger(R.styleable.VerticalMenu_position_horizontal, POSITION_HORIZONTAL_CENTER);
+        rotateToggle = a.getBoolean(R.styleable.VerticalMenu_rotate_toggle, false);
         a.recycle();
 
     }
@@ -61,18 +67,19 @@ public class VerticalMenu extends ViewGroup {
     @Override
     protected void onLayout(boolean b, int i0, int i1, int i2, int i3) {
         if (b) {
-            layoutButton();
+            //layout中心菜单
+            layoutCButton();
 
+            //依次layout每个菜单项
             int count = getChildCount();
             for (int i = 1; i < count; i++) {
 
                 View child = getChildAt(i);
-                child.setVisibility(GONE);
+                child.setVisibility(GONE);//菜单项默认gone
 
                 int cWidth = child.getMeasuredWidth();
                 int cHeight = child.getMeasuredHeight();
 
-                //int cl = mCButton.getLeft() + (mCButton.getMeasuredWidth() - child.getMeasuredWidth()) / 2;
                 int cl = mCButton.getLeft();
                 int ct = getChildAt(i - 1).getTop() - mIntervals - cHeight;
 
@@ -91,25 +98,31 @@ public class VerticalMenu extends ViewGroup {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-   /**-------------------------------intefaces methosd-------------------------------------------**/
-   //根据情况展开或关闭按钮
-   public void toggleMenu(int duration) {
+
+    // ------------------------------- interface method-------------------------------------------
+
+
+    /**
+     * 若当前菜单打开，则执行关闭动画
+     * 若当前菜单关闭，则执行打开动画
+     *
+     * @param duration 动画执行时长
+     */
+    public void toggleMenu(int duration) {
         int count = getChildCount();
         for (int i = 1; i < count; i++) {
             final View child = getChildAt(i);
-            child.setVisibility(VISIBLE);
+            child.setVisibility(VISIBLE);//无论是关闭还是打开菜单,先设置可见性,动画才能运行
 
             int d = mCButton.getTop() - child.getTop();
 
             AnimationSet set = new AnimationSet(true);
-            set.setStartOffset(100 * i / count);
-            Animation tranAnim;
-            RotateAnimation rotaAnim;
 
-            //to open
+            Animation tranAnim;
+
+            //打开菜单时,设置child可点击可聚焦,加监听事件(被点击时播放放大缩小动画)
             if (mCurrentStatus == Status.CLOSE) {
                 tranAnim = new TranslateAnimation(0, 0, d, 0);
-                rotaAnim = new RotateAnimation(0, 540f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                 child.setFocusable(true);
                 child.setClickable(true);
 
@@ -124,8 +137,7 @@ public class VerticalMenu extends ViewGroup {
                         changeState();
                     }
                 });
-            } else {//to close
-                rotaAnim = new RotateAnimation(540f, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+            } else {//关闭菜单时,取消child的可点击可聚焦性
                 tranAnim = new TranslateAnimation(0, 0, 0, d);
                 child.setFocusable(false);
                 child.setClickable(false);
@@ -150,28 +162,44 @@ public class VerticalMenu extends ViewGroup {
 
                 }
             });
-           // set.addAnimation(rotaAnim);
             set.setInterpolator(new DecelerateInterpolator());
             set.addAnimation(tranAnim);
             set.setDuration(duration);
+            set.setStartOffset(100 * i / count);//稍微延迟
 
+            //播放动画
             child.startAnimation(set);
 
         }
         changeState();
     }
 
-    //是否菜单打开
+    /**
+     * @return 返回菜单是否打开的boolean
+     */
     public boolean isMenuOpen() {
         return mCurrentStatus == Status.OPEN;
     }
 
-    //设置菜单项监听器
+    /**
+     * 为菜单的每一个菜单项设置监听事件
+     *
+     * @param mMenuItemClickListener mMenuItemClickListener
+     */
     public void setOnMenuItemClickListener(OnMenuItemClickListener mMenuItemClickListener) {
         this.mMenuItemClickListener = mMenuItemClickListener;
     }
 
-    /**----------------------------------private methods----------------------------------------****/
+    public void setOnMainClickListener(OnMainButtonClickListener mOnClickListner) {
+        this.mOnClickListener = mOnClickListner;
+    }
+    // ----------------------------------private methods----------------------------------------
+
+    /**
+     * 选中某个菜单项时执行此方法，遍历所有菜单项，选中项执行放大动画，其他项执行缩小动画
+     *
+     * @param pos 选中的菜单项的序号
+     */
     private void menuItemAnim(int pos) {
         for (int i = 1; i < getChildCount(); i++) {
             View child = getChildAt(i);
@@ -186,6 +214,10 @@ public class VerticalMenu extends ViewGroup {
         }
     }
 
+    /**
+     * @param duration 动画进行时长
+     * @return 返回设计好的缩小动画 animationSet
+     */
     private Animation scaleSmallAnim(int duration) {
         AnimationSet animationSet = new AnimationSet(true);
 
@@ -198,6 +230,10 @@ public class VerticalMenu extends ViewGroup {
         return animationSet;
     }
 
+    /**
+     * @param duration 动画进行时长
+     * @return 返回设计好的放大动画 animationSet
+     */
     private Animation scaleBigAnim(int duration) {
         AnimationSet animationSet = new AnimationSet(true);
 
@@ -210,17 +246,30 @@ public class VerticalMenu extends ViewGroup {
         return animationSet;
     }
 
+    /**
+     * 装换菜单的开关状态
+     */
     private void changeState() {
         mCurrentStatus = mCurrentStatus == Status.CLOSE ? Status.OPEN : Status.CLOSE;
     }
 
-    private void layoutButton() {
+    /**
+     * 以mCButton为基准，layout所有菜单项
+     */
+    private void layoutCButton() {
         mCButton = getChildAt(0);
         mCButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                rotateButton(view, 0, 360f, 300);
-                toggleMenu(300);
+
+                if (rotateToggle)
+                    rotateButton(view, 0, 360f, 300);
+                if(mOnClickListener!=null){
+                    mOnClickListener.onClick(view);
+                }else{
+                    toggleMenu(300);
+                }
+
             }
         });
 
@@ -231,11 +280,22 @@ public class VerticalMenu extends ViewGroup {
         if (mPositionHorizontal == POSITION_HORIZONTAL_CENTER) {
             l = (getMeasuredWidth() - mCButton.getMeasuredWidth()) / 2;
         } else if (mPositionHorizontal == POSITION_HORIZONTAL_RIGHT) {
+            l = getMeasuredWidth() - mCButton.getMeasuredWidth() - getPaddingRight();
+            t = t - getPaddingBottom();
+        } else {
             l = getMeasuredWidth() - mCButton.getMeasuredWidth();
         }
         mCButton.layout(l, t, l + width, t + height);
     }
 
+    /**
+     * 对某个view执行旋转动画
+     *
+     * @param button   传进来的view
+     * @param start    起始角度
+     * @param end      终止较低
+     * @param duration 执行时间
+     */
     private void rotateButton(View button, float start, float end, int duration) {
         RotateAnimation animation = new RotateAnimation(start, end, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         animation.setFillAfter(true);

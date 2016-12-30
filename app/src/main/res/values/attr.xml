@@ -6,10 +6,12 @@
         <enum name="right_bottom" value="3" />
     </attr>
     <attr name="interval" format="dimension" />
+    <attr name="rotate_toggle" format="boolean"/>
 
     <declare-styleable name="VerticalMenu">
         <attr name="interval" />
         <attr name="position_horizontal"  />
+        <attr name="rotate_toggle"/>
     </declare-styleable>
 
 </resources>
