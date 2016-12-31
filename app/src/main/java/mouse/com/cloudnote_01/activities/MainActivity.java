@@ -109,9 +109,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 rotateAnim.setRepeatMode(RotateAnimation.START_ON_FIRST_FRAME);
                 rotateAnim.setInterpolator(new AccelerateDecelerateInterpolator());
                 btn_flush.startAnimation(rotateAnim);
+                //从数据库中找出所有bmob_id为MyAdapter.EMPTY_BMOB_ID的note数据，添加到BmobHelper准备上传
                 List<Note> notes = ((MyAdapter) (listView.getAdapter())).getMyDatabaseHelper().query(MyAdapter.EMPTY_BMOB_ID);
-                BmobHelper.getInstance().addToSycnNotes(notes);
-                BmobHelper.getInstance().sycnToBmob(this, new BmobHelper.OnSycnFinishListener() {
+                //从数据库中找出所有需要update的notes，添加到BmobHelper准备更新
+                //***？？？？？？？？？？？？？？？？？？？？？？？？？？？？？****
+                BmobHelper.getInstance().sycnToBmob(this,notes,new BmobHelper.OnSycnFinishListener() {
                     @Override
                     public void onSuccess(int suc, int fal, List<Note> successSycnNotes) {
                         Toast.makeText(MainActivity.this, "同步完成" + suc + ",失败" + fal, Toast.LENGTH_SHORT).show();
