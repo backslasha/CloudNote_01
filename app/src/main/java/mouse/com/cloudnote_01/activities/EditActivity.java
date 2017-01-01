@@ -13,6 +13,7 @@ import mouse.com.cloudnote_01.R;
 import mouse.com.cloudnote_01.adapters.MyAdapter;
 import mouse.com.cloudnote_01.beans.Note;
 import mouse.com.cloudnote_01.fire.FireWorkView;
+import mouse.com.cloudnote_01.utils.BmobHelper;
 
 
 public class EditActivity extends BaseActivity {
@@ -47,7 +48,7 @@ public class EditActivity extends BaseActivity {
     public void finishEdit(View view) {
         String time;
         long newId;
-        String title, content;
+        String title, content,bmob_id;
 
         //计算当前时间
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss ");
@@ -71,7 +72,7 @@ public class EditActivity extends BaseActivity {
         //新增的笔记，则设置全新属性（包括id），
         //若是修改的笔记，则只设置部分属性，不修改id
         if (note == null) {
-            note = new Note(title, content, time, newId, MyAdapter.EMPTY_BMOB_ID);
+            note = new Note(title, content, time, newId, BmobHelper.EMPTY_BMOB_ID, BmobHelper.NEED_NOT_UPDATE_TO_BMOB);
         } else {
             note.setNote_content(content);
             note.setNote_title(title);

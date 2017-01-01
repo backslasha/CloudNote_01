@@ -17,7 +17,6 @@ import mouse.com.cloudnote_01.utils.MyDatabaseHelper;
 
 
 public class MyAdapter extends BaseAdapter {
-    public static final String EMPTY_BMOB_ID = "null";
     private LinkedList<Note> mNotes = new LinkedList<>();
     private Context mContext;
 
@@ -71,22 +70,47 @@ public class MyAdapter extends BaseAdapter {
      * 否则直接在顶部增加一个note，此时属于新增笔记
      * @param note 需要增加或者修改的note
      */
-    public void addNote(Note note) {
+    public void insertOrUpdateNote(Note note) {
         for (Note n : mNotes) {
             if (n.equals(note)) {
                 //找到对应id的note时，1.对于mNotes，先删除原来的note，在把新的note添加到mNotes
                 //2.对于数据库，使用update语句更新相应id字段的note
                 mNotes.remove(n);
                 mNotes.addFirst(note);
-                myDatabaseHelper.update(note.getNote_title(), note.getNote_content(), note.getNote_time(), n.getNote_id(), n.getBmob_id());
+                myDatabaseHelper.update(note.getNote_title(), note.getNote_content(), note.getNote_time(), note.getNote_id(), note.getBmob_id(),BmobHelper.NEED_UPDATE_TO_BMOB);
                 notifyDataSetChanged();
+                myDatabaseHelper.query();
                 return;
             }
         }
         //新增节点note到mNotes中并且insert到数据库中
         mNotes.addFirst(note);
         notifyDataSetChanged();
-        myDatabaseHelper.insert(note.getNote_title(), note.getNote_content(), note.getNote_time(), note.getNote_id(), EMPTY_BMOB_ID);
+        myDatabaseHelper.insert(note.getNote_title(), note.getNote_content(), note.getNote_time(), note.getNote_id(), BmobHelper.EMPTY_BMOB_ID,BmobHelper.NEED_NOT_UPDATE_TO_BMOB);
+        myDatabaseHelper.query();
+    }
+
+    /**
+     * 本地化一个note，将note的数据覆盖到 数据库 以及 mNotes
+     * @param note 带着最新信息的note
+     */
+    public void locatedNote(Note note) {
+        for (Note n : mNotes) {
+            if (n.equals(note)) {
+                //找到对应id的note时，1.对于mNotes，先删除原来的note，在把新的note添加到mNotes
+                //2.对于数据库，使用update语句更新相应id字段的note
+                mNotes.remove(n);
+                mNotes.addFirst(note);
+                myDatabaseHelper.update(note.getNote_title(), note.getNote_content(), note.getNote_time(), note.getNote_id(), note.getBmob_id(),note.getNeed_update_to_bmob());
+                notifyDataSetChanged();
+                myDatabaseHelper.query();
+                return;
+            }
+        }
+        //新增节点note到mNotes中并且insert到数据库中
+        mNotes.addFirst(note);
+        notifyDataSetChanged();
+        myDatabaseHelper.insert(note.getNote_title(), note.getNote_content(), note.getNote_time(), note.getNote_id(), BmobHelper.EMPTY_BMOB_ID,BmobHelper.NEED_NOT_UPDATE_TO_BMOB);
         myDatabaseHelper.query();
     }
 

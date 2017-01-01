@@ -94,7 +94,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (requestCode == 0) {
             if (resultCode == RESULT_OK) {
                 Note note = (Note) data.getSerializableExtra("note");
-                ((MyAdapter) listView.getAdapter()).addNote(note);
+                ((MyAdapter) listView.getAdapter()).insertOrUpdateNote(note);
             }
         }
     }
@@ -110,17 +110,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 rotateAnim.setInterpolator(new AccelerateDecelerateInterpolator());
                 btn_flush.startAnimation(rotateAnim);
                 //从数据库中找出所有bmob_id为MyAdapter.EMPTY_BMOB_ID的note数据，添加到BmobHelper准备上传
-                List<Note> notes = ((MyAdapter) (listView.getAdapter())).getMyDatabaseHelper().query(MyAdapter.EMPTY_BMOB_ID);
+                List<Note> notes = ((MyAdapter) (listView.getAdapter())).getMyDatabaseHelper().query(BmobHelper.EMPTY_BMOB_ID);
                 //从数据库中找出所有需要update的notes，添加到BmobHelper准备更新
-                //***？？？？？？？？？？？？？？？？？？？？？？？？？？？？？****
+                notes.addAll(((MyAdapter) (listView.getAdapter())).getMyDatabaseHelper().query(BmobHelper.NEED_UPDATE_TO_BMOB));
+
                 BmobHelper.getInstance().sycnToBmob(this,notes,new BmobHelper.OnSycnFinishListener() {
                     @Override
                     public void onSuccess(int suc, int fal, List<Note> successSycnNotes) {
                         Toast.makeText(MainActivity.this, "同步完成" + suc + ",失败" + fal, Toast.LENGTH_SHORT).show();
                         btn_flush.clearAnimation();
-                        MyDatabaseHelper myDatabaseHelper = ((MyAdapter) (listView.getAdapter())).getMyDatabaseHelper();
+                        //更新成功后的notes的 bmob_id和need_update_to_bomb两个信息变动，需要更新到本地
                         for (Note note : successSycnNotes) {
-                            myDatabaseHelper.update(note.getNote_title(), note.getNote_content(), note.getNote_time(), note.getNote_id(), note.getBmob_id());
+                            ((MyAdapter) (listView.getAdapter())).locatedNote(note);
                         }
                     }
 
