@@ -6,7 +6,7 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/background_01"
                 android:orientation="vertical"
-                tools:context=".activities.MainActivity">
+                tools:context=".notelist.MainActivity">
 
 
     <LinearLayout

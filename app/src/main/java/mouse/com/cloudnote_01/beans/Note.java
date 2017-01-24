@@ -8,6 +8,8 @@ public class Note extends BmobObject implements Serializable {
     private String note_title;
     private String note_content;
     private String note_time;
+    private String bmob_id;
+    private long note_id;
 
     public int getNeed_update_to_bmob() {
         return need_update_to_bmob;
@@ -27,10 +29,6 @@ public class Note extends BmobObject implements Serializable {
         this.bmob_id = bmob_id;
     }
 
-    private String bmob_id;
-
-
-    private long note_id;
 
     public Note(String note_title, String note_content, String note_time, long note_id, String bmob_id,int need_update_to_bmob) {
         this.note_title = note_title;
