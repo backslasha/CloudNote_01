@@ -50,7 +50,6 @@ public class BmobHelper {
 
     /**
      * 本地数据同步至Bmob后台
-     *
      * @param context              context
      * @param waitToSycnNotes      把需要sycn的notes封装在list中
      * @param onSycnFinishListener sycn结束时回调的接口
@@ -133,7 +132,7 @@ public class BmobHelper {
     /**
      * 逐个插入待插入的note
      *
-     * @param context              context
+     * @param context   context
      * @param waitToInsertNotes    waitToInsertNotes
      * @param onSycnFinishListener onSycnFinishListener
      */

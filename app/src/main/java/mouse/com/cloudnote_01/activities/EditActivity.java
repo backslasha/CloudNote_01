@@ -2,9 +2,23 @@ package mouse.com.cloudnote_01.activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.MaskFilter;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextWatcher;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.ImageSpan;
+import android.text.style.MaskFilterSpan;
+import android.text.style.URLSpan;
+import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -37,7 +51,22 @@ public class EditActivity extends BaseActivity {
             preNoteContent = note.getNote_content();
             preNoteTitle = note.getNote_title();
 
-            edt_content.setText(preNoteContent);
+            //SpannableString spannableString = new SpannableString(preNoteContent);
+            //spannableString.setSpan(new ForegroundColorSpan(Color.BLUE),0,preNoteContent.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+           // spannableString.setSpan(new BackgroundColorSpan(Color.CYAN),0,preNoteContent.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            //spannableString.setSpan(new URLSpan("http://www.baidu.com"),0,preNoteContent.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            //ImageSpan imageSpan = new ImageSpan(this,R.mipmap.ic_launcher);
+            // //  spannableString.setSpan(imageSpan,6,8, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            //   ClickableSpan clickableSpan = new ClickableSpan() {
+                //    @Override
+                //      public void onClick(View widget) {
+                    //         Toast.makeText(EditActivity.this, "cao", Toast.LENGTH_SHORT).show();
+                    //     }
+                // };
+            // spannableString.setSpan(clickableSpan,6,8, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            // edt_content.setText(spannableString);
+
+           edt_content.setText(preNoteContent);
             edt_title.setText(preNoteTitle);
         }
 

@@ -135,6 +135,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     }
     /**
      * 查询数据库notes表中所有未同步到Bmob后端的note行
+     *
      * @return 将所有查询到的note封装在LinkedList中
      */
     public LinkedList<Note> query(int need_update_to_bmob) {
