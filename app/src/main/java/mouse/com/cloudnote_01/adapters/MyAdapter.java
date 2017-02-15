@@ -23,13 +23,13 @@ public class MyAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() {
-        return mNotes.size();
+    public Object getItem(int i) {
+        return mNotes.get(i);
     }
 
     @Override
-    public Object getItem(int i) {
-        return mNotes.get(i);
+    public int getCount() {
+        return mNotes.size();
     }
 
     @Override
