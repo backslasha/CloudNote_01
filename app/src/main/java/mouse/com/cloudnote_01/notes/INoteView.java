@@ -1,4 +1,4 @@
-package mouse.com.cloudnote_01.notelist;
+package mouse.com.cloudnote_01.notes;
 
 
 public interface INoteView {

@@ -15,16 +15,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <mouse.com.cloudnote_01.fire.FireWorkView
-            android:id="@+id/id_fireworkview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
 
         <EditText
             android:id="@+id/id_edt_content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-
             android:gravity="top"
             android:hint="在这里输入您的文字......" />
     </FrameLayout>

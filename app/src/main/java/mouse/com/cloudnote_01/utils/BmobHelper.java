@@ -1,11 +1,16 @@
 package mouse.com.cloudnote_01.utils;
 
 import android.content.Context;
+import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UpdateListener;
@@ -29,6 +34,13 @@ public class BmobHelper {
         successSycnNotes = new ArrayList<>();
     }
 
+    public static synchronized BmobHelper getInstance() {
+        if (instance == null) {
+            instance = new BmobHelper();
+        }
+        return instance;
+    }
+
     public interface OnSycnFinishListener {
         void onSuccess(int suc, int fal, List<Note> successSycnNotes);
 
@@ -41,20 +53,17 @@ public class BmobHelper {
         void onFailure(int i, String s);
     }
 
-    public static synchronized BmobHelper getInstance() {
-        if (instance == null) {
-            instance = new BmobHelper();
-        }
-        return instance;
-    }
 
     /**
      * 本地数据同步至Bmob后台
+     *
      * @param context              context
-     * @param waitToSycnNotes      把需要sycn的notes封装在list中
-     * @param onSycnFinishListener sycn结束时回调的接口
+     * @param waitToSycnNotes      把需要 sycn 的 notes 封装在list中
+     * @param onSycnFinishListener sycn 结束时回调的接口
      */
-    public void sycnToBmob(final Context context, final List<Note> waitToSycnNotes, final OnSycnFinishListener onSycnFinishListener) {
+    public void sycnToBmob(final Context context,
+                           final List<Note> waitToSycnNotes,
+                           final OnSycnFinishListener onSycnFinishListener) {
         suc = fal = 0;
         BmobQuery<Note> query = new BmobQuery<>();
         successSycnNotes.clear();
@@ -65,14 +74,6 @@ public class BmobHelper {
                 onSycnFinishListener.onSuccess(0, 0, successSycnNotes);
             return;
         }
-
-//        //只查询本次需要更新的id的note
-//        long ids[] = new long[waitToSycnNotes.size()];
-//        int i = 0;
-//        for (Note note : waitToSycnNotes) {
-//            ids[i++] = note.getNote_id();
-//        }
-//        //query.addWhereContainedIn("id", Arrays.asList(ids));
 
         //查询所有待更新的notes
         query.findObjects(context, new FindListener<Note>() {
@@ -93,7 +94,7 @@ public class BmobHelper {
                     @Override
                     public void onFailure(int i, String s) {
                         if (onSycnFinishListener != null)
-                            onSycnFinishListener.onFailure(i,s);
+                            onSycnFinishListener.onFailure(i, s);
                     }
                 });
 
@@ -107,6 +108,28 @@ public class BmobHelper {
         });
 
 
+    }
+
+    public void fetchCloudNotes(final Context context,
+                                final OnSycnFinishListener onSycnFinishListener) {
+
+        BmobQuery<Note> query = new BmobQuery<>();
+        query.setLimit(100);
+        query.findObjects(context, new FindListener<Note>() {
+            @Override
+            public void onSuccess(List<Note> list) {
+                if (onSycnFinishListener != null) {
+                    onSycnFinishListener.onSuccess(+1, 0, list);
+                }
+            }
+
+            @Override
+            public void onError(int i, String s) {
+                if (onSycnFinishListener != null) {
+                    onSycnFinishListener.onFailure(1, s);
+                }
+            }
+        });
     }
 
     /**
@@ -132,11 +155,13 @@ public class BmobHelper {
     /**
      * 逐个插入待插入的note
      *
-     * @param context   context
+     * @param context              context
      * @param waitToInsertNotes    waitToInsertNotes
      * @param onSycnFinishListener onSycnFinishListener
      */
-    private void insertToBmob(final Context context, final List<Note> waitToInsertNotes, final OnSycnFinishListener onSycnFinishListener) {
+    private void insertToBmob(final Context context,
+                              final List<Note> waitToInsertNotes,
+                              final OnSycnFinishListener onSycnFinishListener) {
         if (waitToInsertNotes.size() == 0) {
             if (onSycnFinishListener != null)
                 onSycnFinishListener.onSuccess(suc, fal, successSycnNotes);
@@ -173,7 +198,9 @@ public class BmobHelper {
      * @param context           context
      * @param waitToUpdateNotes waitToUpdateNotes
      */
-    private void updateToBmob(final Context context, final List<Note> waitToUpdateNotes, final OnUpdateFinishListener onUpdateFinishListener) {
+    private void updateToBmob(final Context context,
+                              final List<Note> waitToUpdateNotes,
+                              final OnUpdateFinishListener onUpdateFinishListener) {
         if (waitToUpdateNotes.size() == 0) {
             if (onUpdateFinishListener != null)
                 onUpdateFinishListener.onSuccess();
