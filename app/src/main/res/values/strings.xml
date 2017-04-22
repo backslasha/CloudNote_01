@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">CloudNote_01</string>
+    <string name="app_name">协同云笔记</string>
+    <string name="cancel">舍弃</string>
+    <string name="save">保存</string>
 </resources>

@@ -7,10 +7,14 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 import cn.bmob.v3.Bmob;
 import mouse.com.cloudnote_01.activities.BaseActivity;
@@ -94,13 +98,26 @@ public class NotesActivity extends BaseActivity implements View.OnClickListener,
 
     @Override
     public void showDeleteDialog(final int index) {
+        final boolean[] isDeleteCloud = {false};
         AlertDialog.Builder builder = new AlertDialog.Builder(NotesActivity.this);
+        String[] checkItems = {"是否删除云端笔记？"};
         builder.setTitle("删除此记录？").setPositiveButton("是哒", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int j) {
-                mNotePresenter.deleteNote(index);
+                mNotePresenter.deleteNote(index, isDeleteCloud[0]);
+                mNotesAdapter.notifyItemRemoved(index);
+                mNotesAdapter.notifyItemRangeChanged(index, mNotesAdapter.getItemCount() - index - 1);
             }
-        }).setNegativeButton("不了", null).setCancelable(true).show();
+        }).setNegativeButton("不了", null)
+                .setCancelable(true)
+                .setMultiChoiceItems(checkItems, null,
+                        new DialogInterface.OnMultiChoiceClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                                isDeleteCloud[0] = isChecked;
+                            }
+                        })
+                .show();
     }
 
     @Override
@@ -133,6 +150,6 @@ public class NotesActivity extends BaseActivity implements View.OnClickListener,
             }
         });
         recyclerView.setAdapter(mNotesAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
     }
 }

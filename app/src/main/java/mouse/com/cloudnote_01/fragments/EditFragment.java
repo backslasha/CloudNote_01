@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -25,8 +27,10 @@ import static android.app.Activity.RESULT_OK;
 public class EditFragment extends Fragment {
     private SingleFragmentActivity mHostActivity;
     private static final String ARG_SINGLE_NOTE = "ARG_SINGLE_NOTE";
-    private EditText edt_content, edt_title;
-    private String preNoteTitle = "", preNoteContent = "";//上次关闭时的本条笔记的标题和内容，若是新开的笔记，则都为“”
+    private EditText edt_content;
+    private Toolbar mToolbar;
+    private String preNoteTitle = "",
+            preNoteContent = "";//上次关闭时的本条笔记的标题和内容，若是新开的笔记，则都为“”
     private Note note;
 
     public static EditFragment newInstance(Note note) {
@@ -44,7 +48,19 @@ public class EditFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit, container, false);
         edt_content = (EditText) view.findViewById(R.id.id_edt_content);
-        edt_title = (EditText) view.findViewById(R.id.id_edt_title);
+
+        mToolbar = (Toolbar) view.findViewById(R.id.id_toolbar);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finishEdit();
+            }
+        });
+//        mHostActivity.setSupportActionBar(mToolbar);
+//        if (mHostActivity.getSupportActionBar() != null){
+//            mHostActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//            mHostActivity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_left);
+//        }
 
         Button button = (Button) view.findViewById(R.id.id_btn_store);
         button.setOnClickListener(new View.OnClickListener() {
@@ -61,7 +77,8 @@ public class EditFragment extends Fragment {
             note = (Note) getArguments().getSerializable(ARG_SINGLE_NOTE);
 
             preNoteContent = note.getNote_content();
-            preNoteTitle = note.getNote_title();
+            if (note.getNote_title() != null)
+                preNoteTitle = note.getNote_title();
 
             //SpannableString spannableString = new SpannableString(preNoteContent);
             //spannableString.setSpan(new ForegroundColorSpan(Color.BLUE),0,preNoteContent.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
@@ -79,7 +96,7 @@ public class EditFragment extends Fragment {
             // edt_content.setText(spannableString);
 
             edt_content.setText(preNoteContent);
-            edt_title.setText(preNoteTitle);
+            mToolbar.setTitle(preNoteTitle);
         }
         return view;
     }
@@ -106,8 +123,18 @@ public class EditFragment extends Fragment {
         newId = curDate.getTime();
 
         //获取editText中的文本
-        title = edt_title.getText().toString();
         content = edt_content.getText().toString();
+
+
+        int index = 0;
+        int index0 = content.indexOf("\n");
+        int index1 = content.indexOf(" ");
+        if (index0 >= 0 && index1 >= 0)
+            index = Math.min(index0, index1);
+        else if (index0 < 0 && index1 < 0)
+            index = 0;
+        else index = Math.max(index0, index1);
+        title = content.substring(0, index);
 
         //保存时，缺省的标题的和文本内容
         if (title.equals("") && !content.equals("")) {
@@ -133,7 +160,8 @@ public class EditFragment extends Fragment {
         intent.putExtra("note", note);
 
         //如果本次提交的note没有修改过，则结果码设置为RESULT_CANCELED
-        if (edt_title.getText().toString().equals(preNoteTitle) && edt_content.getText().toString().equals(preNoteContent)) {
+        if (mToolbar.getTitle().toString().equals(preNoteTitle)
+                && edt_content.getText().toString().equals(preNoteContent)) {
             mHostActivity.setResult(RESULT_CANCELED, intent);
         } else {
             mHostActivity.setResult(RESULT_OK, intent);

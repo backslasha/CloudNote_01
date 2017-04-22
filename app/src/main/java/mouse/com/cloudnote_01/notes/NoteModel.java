@@ -78,9 +78,10 @@ class NoteModel implements INoteModel {
      */
     @Override
     public void deleteNote(int i) {
-        mNotes.remove(i);
         myDatabaseHelper.delete(mNotes.get(i).getNote_id());
+        mNotes.remove(i);
         Toast.makeText(mContext, "已删除.", Toast.LENGTH_SHORT).show();
+        myDatabaseHelper.query();
     }
 
 

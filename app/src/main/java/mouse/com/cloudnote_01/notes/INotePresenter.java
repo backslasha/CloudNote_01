@@ -14,7 +14,7 @@ public interface INotePresenter {
 
     void insertOrUpdateNoteToDb(Note note);
 
-    void deleteNote(int i);
+    void deleteNote(int i, boolean needDeleteCloud);
 
     void sycnNotesBetweenCloud();
 

@@ -5,4 +5,6 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="themeGreen">#6a9d98</color>
+    <color name="themeGreenTransparent">#336a9d98</color>
+    <color name="brown">#DAA520</color>
 </resources>

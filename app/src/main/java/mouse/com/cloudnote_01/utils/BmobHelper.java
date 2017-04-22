@@ -1,6 +1,7 @@
 package mouse.com.cloudnote_01.utils;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.lang.reflect.Array;
@@ -11,6 +12,7 @@ import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.DeleteListener;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UpdateListener;
@@ -18,6 +20,7 @@ import mouse.com.cloudnote_01.beans.Note;
 
 
 public class BmobHelper {
+    public static final String TAG = "BmobHelper";
     public static final String EMPTY_BMOB_ID = "null";
     public static final int NEED_UPDATE_TO_BMOB = 1;
     public static final int NEED_NOT_UPDATE_TO_BMOB = 0;
@@ -39,6 +42,23 @@ public class BmobHelper {
             instance = new BmobHelper();
         }
         return instance;
+    }
+
+    public void deleteFromBmob(String bmob_id, Context context) {
+        Note note = new Note();
+        note.setObjectId(bmob_id);
+        note.delete(context, new DeleteListener() {
+            @Override
+            public void onSuccess() {
+                Log.d(TAG, "成功从云端删除一条笔记.");
+            }
+
+            @Override
+            public void onFailure(int i, String s) {
+                Log.d(TAG, i + ": " + s);
+            }
+        });
+
     }
 
     public interface OnSycnFinishListener {

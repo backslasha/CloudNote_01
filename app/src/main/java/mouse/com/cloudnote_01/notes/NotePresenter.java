@@ -36,9 +36,12 @@ public class NotePresenter implements INotePresenter {
 
 
     @Override
-    public void deleteNote(int i) {
+    public void deleteNote(int i, boolean needDeleteCloud) {
+        String bmob_id = mNoteModel.getNotes().get(i).getBmob_id();
         mNoteModel.deleteNote(i);
-
+        if (needDeleteCloud) {
+            mBmobHelper.deleteFromBmob(bmob_id, mContext);
+        }
     }
 
     @Override
