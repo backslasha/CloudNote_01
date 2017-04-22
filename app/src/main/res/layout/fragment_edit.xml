@@ -11,9 +11,19 @@
         android:id="@+id/id_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         app:title="@string/app_name"
-        app:titleTextColor="@color/themeGreen" />
+        android:layout_marginTop="20dp"
+        app:titleTextColor="@color/themeGreen">
+
+        <Button
+            android:id="@+id/id_btn_store"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:background="@android:color/transparent"
+            android:text="@string/save"
+            android:textColor="@color/themeGreen" />
+    </android.support.v7.widget.Toolbar>
 
     <EditText
         android:id="@+id/id_edt_content"
@@ -41,14 +51,6 @@
             android:text="@string/cancel"
             android:textColor="@color/themeGreen" />
 
-        <Button
-            android:id="@+id/id_btn_store"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:background="@android:color/transparent"
-            android:text="@string/save"
-            android:textColor="@color/themeGreen" />
     </RelativeLayout>
 
 </LinearLayout>
